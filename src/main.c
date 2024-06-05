@@ -2,29 +2,28 @@
 #include <stm32f4xx.h>
 #include <startup.c>
 #include <stdbool.h>
-#include <spi1.h>
+
+//TODO: Add SPI, GPIO, TIMER headers.
+
+void exti_interrupt_init()
+{
+    // EXTI Control Register 3, Set IRQ for PA11;
+    SET_BIT(SYSCFG->EXTICR[3], SYSCFG_EXTICR3_EXTI11_PA << SYSCFG_EXTICR3_EXTI11_Pos);
+
+    // TODO: SPI interupts
+    // TODO: TIMER interupts
+}
+
+void gpio_init()
+{
+    // PA11 input, pulldown resistor
+}
 
 int main()
 {
-
-    // Clock enable PA
-    SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOAEN);
-    // Set PA9 as output
-    SET_BIT(GPIOA->MODER, 0b01 << 10);
-
-    // Infinite loop
     while (true)
     {
-        SET_BIT(GPIOA->BSRR, 1U << 5);
 
-        for (volatile uint32_t i = 0; i < 100000; i++)
-            ;
-
-        SET_BIT(GPIOA->BSRR, 1U << 21);
-
-        for (volatile uint32_t i = 0; i < 100000; i++)
-            ;
     }
-
     return 0;
 }
