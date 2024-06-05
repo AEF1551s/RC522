@@ -5,14 +5,16 @@ set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/toolchain.cmake)
 project(stmproj)
 
 # The executable target
-add_executable(stmproj src/main.c)
+add_executable(stmproj src/main.c
+                    src/user_functions.c 
+                    src/spi1.c
+)
 
 target_include_directories(stmproj 
-PRIVATE ${CMAKE_SOURCE_DIR}/drivers/CMSIS/device
 PRIVATE ${CMAKE_SOURCE_DIR}/drivers/CMSIS/include
+PRIVATE ${CMAKE_SOURCE_DIR}/drivers/CMSIS/device
 PRIVATE ${CMAKE_SOURCE_DIR}/startup
 PRIVATE ${CMAKE_SOURCE_DIR}/include
-PRIVATE ${CMAKE_SOURCE_DIR}/src
                             )
 
 # Post-build command to generate elf file from executable
@@ -43,7 +45,7 @@ set(openocd_flags
 
 # -D FLASH=ON
 if(FLASH)
-message("run ninja to flash")
+message("run make to flash")
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND openocd ${openocd_flags} )
 
