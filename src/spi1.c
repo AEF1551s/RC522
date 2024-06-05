@@ -1,4 +1,9 @@
-#include <spi1.h>
+#include "spi1.h"
+
+pin_struct_TypeDef cs_pin;
+pin_struct_TypeDef sck_pin;
+pin_struct_TypeDef miso_pin;
+pin_struct_TypeDef mosi_pin;
 
 static void spi1_clock_init()
 {

@@ -6,11 +6,6 @@
 #include <user_types.h>
 #include <user_functions.h>
 
-pin_struct_TypeDef cs_pin;
-pin_struct_TypeDef sck_pin;
-pin_struct_TypeDef miso_pin;
-pin_struct_TypeDef mosi_pin;
-
 static void spi1_clock_init();
 static void spi1_pin_init();
 static void spi1_config();
