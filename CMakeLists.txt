@@ -8,12 +8,15 @@ project(stmproj)
 add_executable(stmproj src/main.c
                     src/user_functions.c 
                     src/spi1.c
+                    src/gpio.c
+                    src/exti.c
+                    startup/startup.c
 )
 
 target_include_directories(stmproj 
 PRIVATE ${CMAKE_SOURCE_DIR}/drivers/CMSIS/include
 PRIVATE ${CMAKE_SOURCE_DIR}/drivers/CMSIS/device
-PRIVATE ${CMAKE_SOURCE_DIR}/startup
+# PRIVATE ${CMAKE_SOURCE_DIR}/startup
 PRIVATE ${CMAKE_SOURCE_DIR}/include
                             )
 
