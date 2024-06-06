@@ -9,7 +9,7 @@ set(compiler_path /home/roboros/gcc-arm-none-eabi-10.3-2021.10)
 set(CMAKE_C_COMPILER "${compiler_path}/bin/arm-none-eabi-gcc")
 # Compiler flags
 set(compiler_flags
-    "-mcpu=cortex-m4 -mthumb"
+    "-mcpu=cortex-m4 -mthumb -g -O0 "
 )
 set(linker_flags
     "-specs=nosys.specs -T /home/roboros/stm32_projects/stm32_crosscomp/startup/stm32f410rbtx.ld -nostdlib -ffreestanding"
