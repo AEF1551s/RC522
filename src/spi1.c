@@ -7,7 +7,7 @@ pin_struct_TypeDef mosi_pin;
 
 static void spi1_clock_init()
 {
-    // GPIOA clock enable for slave select
+    // GPIOA clock enable for slave select pin
     SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOAEN);
     //GPIOB clock enable for SPI1 pins
     SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOBEN);
@@ -35,9 +35,10 @@ static void spi1_config()
 
     // Set baud-rate control to f(pckl)/4 = 4MHz; 0b001
     SET_BIT(SPI1->CR1, SPI_CR1_BR_0);
-
-    SPI1->CR1 &= ~(1U << 4);
-    SPI1->CR1 &= ~(1U << 5);
+    CLEAR_BIT(SPI1->CR1, SPI_CR1_BR_1);
+    CLEAR_BIT(SPI1->CR1, SPI_CR1_BR_2);
+    // SPI1->CR1 &= ~(1U << 4);
+    // SPI1->CR1 &= ~(1U << 5);
 
     // Set CPOL and CPHA to 1 (from datasheet)
     SET_BIT(SPI1->CR1, SPI_CR1_CPOL);
