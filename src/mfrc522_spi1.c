@@ -2,12 +2,6 @@
 
 void mfrc522_read_data_byte(PCD_Register addr, uint8_t *data)
 { // addr - adress byte, *data - for storing received data
-    if (READ_BIT(addr, 1))
-    {
-        // If addr first bit is 1, the adrress is invalid
-        return;
-    }
-
     cs_enable();
 
     uint8_t tx_byte = 0x00;
