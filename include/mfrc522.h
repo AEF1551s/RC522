@@ -5,7 +5,7 @@
 
 // MFRC522 registers. Described in chapter 9 of the datasheet.
 	// When using SPI all addresses are shifted one bit left in the "SPI address byte" (section 8.1.2.3)
-	enum PCD_Register {
+	typedef enum {
 		// Page 0: Command and status
 		//						  0x00			// reserved for future use
 		CommandReg				= 0x01 << 1,	// starts and stops command execution
@@ -75,12 +75,12 @@
 		TestADCReg				= 0x3B << 1		// shows the value of ADC I and Q channels
 		// 						  0x3C			// reserved for production tests
 		// 						  0x3D			// reserved for production tests
-		// 						  0x3E			// reserved for production tests
+		// 						  0x3E			// reserved for prbyteoduction tests
 		// 						  0x3F			// reserved for production tests
-	};
+	}PCD_Register;
 	
 	// MFRC522 comands. Described in chapter 10 of the datasheet.
-	enum PCD_Command {
+	typedef enum {
 		PCD_Idle				= 0x00,		// no action, cancels current command execution
 		PCD_Mem					= 0x01,		// stores 25 bytes into the internal buffer
 		PCD_GenerateRandomID	= 0x02,		// generates a 10-byte random ID number
@@ -91,7 +91,7 @@
 		PCD_Transceive 			= 0x0C,		// transmits data from FIFO buffer to antenna and automatically activates the receiver after transmission
 		PCD_MFAuthent 			= 0x0E,		// performs the MIFARE standard authentication as a reader
 		PCD_SoftReset			= 0x0F		// resets the MFRC522
-	};
+	}PCD_Command;
 	
 	// Commands sent to the PICC.
 	enum PICC_Command {
@@ -165,7 +165,7 @@
 	} MIFARE_Key;
 	
 	// Member variables
-	Uid uid;								// Used by PICC_ReadCardSerial().
+	// Uid uid;								// Used by PICC_ReadCardSerial().
 	
 	// Size of the MFRC522 FIFO
 	static const uint8_t FIFO_SIZE = 64;	
