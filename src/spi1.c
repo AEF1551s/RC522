@@ -9,7 +9,7 @@ static void spi1_clock_init()
 {
     // GPIOA clock enable for slave select pin
     SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOAEN);
-    //GPIOB clock enable for SPI1 pins
+    // GPIOB clock enable for SPI1 pins
     SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOBEN);
     // SPI1 clock enable
     SET_BIT(RCC->APB2ENR, RCC_APB2ENR_SPI1EN);
@@ -24,9 +24,9 @@ static void spi1_pin_init()
     mosi_pin = pin_setup(GPIOB, PIN5, ALTERNATE);
 
     // Set AF5
-    SET_BIT(GPIOB->AFR[0], GPIO_AFRL_AFRL3_0 | GPIO_AFRL_AFRL3_2); //SPI1_SCK
-    SET_BIT(GPIOB->AFR[0], GPIO_AFRL_AFRL4_0 | GPIO_AFRL_AFRL4_2); //SPI1_MISO
-    SET_BIT(GPIOB->AFR[0], GPIO_AFRL_AFRL5_0 | GPIO_AFRL_AFRL5_2); //SPI1_MOSI
+    SET_BIT(GPIOB->AFR[0], GPIO_AFRL_AFRL3_0 | GPIO_AFRL_AFRL3_2); // SPI1_SCK
+    SET_BIT(GPIOB->AFR[0], GPIO_AFRL_AFRL4_0 | GPIO_AFRL_AFRL4_2); // SPI1_MISO
+    SET_BIT(GPIOB->AFR[0], GPIO_AFRL_AFRL5_0 | GPIO_AFRL_AFRL5_2); // SPI1_MOSI
     /*********************/
 }
 
@@ -93,14 +93,18 @@ void spi1_transmit(uint8_t *data, uint32_t size)
     temp = SPI1->SR;
 }
 
-void spi1_receive(uint8_t *data, uint32_t size)
-{
+void spi1_receive(uint8_t *data, uint32_t size, bool dummy_data)
+{   
+    //Read from DR writes into Rx buffer
+    //Write in DR writes into Tx Buffer
     while (size)
     {
-        // Send dummy data
-        SPI1->DR = 0;
-
-        // Wait unitl RXNE is set
+        if (dummy_data)
+        {
+            // Send dummy data
+            SPI1->DR = 0;
+        }
+        // Wait unitl RXNE is set/Rx buffer is empty
         while (!READ_BIT(SPI1->SR, SPI_SR_RXNE))
             ;
 

@@ -11,7 +11,7 @@ static void spi1_pin_init();
 static void spi1_config();
 void spi1_init();
 void spi1_transmit(uint8_t *data, uint32_t size);
-void spi1_receive(uint8_t *data, uint32_t size);
+void spi1_receive(uint8_t *data, uint32_t size, bool dummy_data);
 void cs_enable();
 void cs_disable();
 
