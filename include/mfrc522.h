@@ -5,7 +5,7 @@
 
 // MFRC522 registers. Described in chapter 9 of the datasheet.
 	// When using SPI all addresses are shifted one bit left in the "SPI address byte" (section 8.1.2.3)
-	typedef enum {
+	typedef enum PCD_Register{
 		// Page 0: Command and status
 		//						  0x00			// reserved for future use
 		CommandReg				= 0x01 << 1,	// starts and stops command execution
@@ -80,7 +80,7 @@
 	}PCD_Register;
 	
 	// MFRC522 comands. Described in chapter 10 of the datasheet.
-	typedef enum {
+	typedef enum PCD_Command{
 		PCD_Idle				= 0x00,		// no action, cancels current command execution
 		PCD_Mem					= 0x01,		// stores 25 bytes into the internal buffer
 		PCD_GenerateRandomID	= 0x02,		// generates a 10-byte random ID number
