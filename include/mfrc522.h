@@ -94,7 +94,7 @@
 	}PCD_Command;
 	
 	// Commands sent to the PICC.
-	enum PICC_Command {
+	typedef enum PICC_Command {
 		// The commands used by the PCD to manage communication with several PICCs (ISO 14443-3, Type A, section 6.4)
 		PICC_CMD_REQA			= 0x26,		// REQuest command, Type A. Invites PICCs in state IDLE to go to READY and prepare for anticollision or selection. 7 bit frame.
 		PICC_CMD_WUPA			= 0x52,		// Wake-UP command, Type A. Invites PICCs in state IDLE and HALT to go to READY(*) and prepare for anticollision or selection. 7 bit frame.
@@ -117,7 +117,7 @@
 		// The commands used for MIFARE Ultralight (from http://www.nxp.com/documents/data_sheet/MF0ICU1.pdf, Section 8.6)
 		// The PICC_CMD_MF_READ and PICC_CMD_MF_WRITE can also be used for MIFARE Ultralight.
 		PICC_CMD_UL_WRITE		= 0xA2		// Writes one 4 byte page to the PICC.
-	};
+	}PICC_Command;
 	
 	// MIFARE constants that does not fit anywhere else
 	enum MIFARE_Misc {
@@ -140,7 +140,7 @@
 	};
 	
 	// Return codes from the functions in this class. Remember to update GetStatusCodeName() if you add more.
-	enum StatusCode {
+	typedef enum StatusCode {
 		STATUS_OK				= 1,	// Success
 		STATUS_ERROR			= 2,	// Error in communication
 		STATUS_COLLISION		= 3,	// Collission detected
@@ -150,7 +150,7 @@
 		STATUS_INVALID			= 7,	// Invalid argument.
 		STATUS_CRC_WRONG		= 8,	// The CRC_A does not match
 		STATUS_MIFARE_NACK		= 9		// A MIFARE PICC responded with NAK.
-	};
+	}StatusCode;
 	
 	// A struct used for passing the UID of a PICC.
 	typedef struct {
