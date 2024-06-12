@@ -1,42 +1,39 @@
 #include <stm32f410rx.h>
 #include <stm32f4xx.h>
-// #include <startup.c>
 #include <stdbool.h>
 #include <gpio.h>
 #include <exti.h>
+#include <mfrc522.h>
+#include <spi1.h>
 
 // TODO: Add SPI, GPIO, TIMER headers.
 
 int main()
 {
-
+    // Setup
     gpio_init();
     exti_init();
+    spi1_init();
+    mfrc522_init();
 
+    // delay
+    for (volatile uint32_t i = 0; i < 100000; i++)
+        ;
+
+    uint8_t version = mfrc522_pcd_get_version();
+
+    // Loop
     while (true)
     {
-        
-        if (READ_BIT(GPIOB->IDR, GPIO_IDR_IDR_11))
-        {
-
-            // ON LED
-            SET_BIT(GPIOB->BSRR, GPIO_BSRR_BS13);
-
-            // wait
-            for (volatile int i = 0; i < 1000000; i++)
-                ;
-            // OFF LED
-            SET_BIT(GPIOB->BSRR, GPIO_BSRR_BR13);
-            // wait
-            for (volatile int i = 0; i < 1000000; i++)
-                ;
-        }
     }
 
     return 0;
 }
 
 // Interrupts
+
+// When button is pressed, PCD communicated with PICC to check if card is present
+// Handler returns only when card is present
 void EXTI15_10_IRQHandler(void)
 {
     // if interrupt happens on 11 pin
@@ -45,13 +42,10 @@ void EXTI15_10_IRQHandler(void)
         // Clear pending bit by writing 1 per RefManual. reset interupt request
         SET_BIT(EXTI->PR, EXTI_PR_PR11);
 
-        // ON LED
-        SET_BIT(GPIOB->BSRR, GPIO_BSRR_BS13);
-
-        // wait
-        for (volatile int i = 0; i < 1000000; i++)
-            ;
-        // OFF LED
-        SET_BIT(GPIOB->BSRR, GPIO_BSRR_BR13);
+        while (true)
+        {
+            if (!PICC_new_card_present())
+                return;
+        }
     }
 }
