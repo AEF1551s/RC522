@@ -71,7 +71,7 @@ static void write_register(PCD_Register addr, uint8_t *data) {
 //     cs_disable();
 // }
 
-static void write_register_stream(PCD_Register addr, uint32_t sendLen, uint8_t *data) {
+static void write_register_stream(PCD_Register addr, uint32_t send_len, uint8_t *data) {
     // Send address byte, then send data byte to write into address
     cs_enable();
 
@@ -81,12 +81,12 @@ static void write_register_stream(PCD_Register addr, uint32_t sendLen, uint8_t *
     // Send address
     spi1_transmit(&addr, 1);
     // Send data stream
-    spi1_transmit(data, sendLen);
+    spi1_transmit(data, send_len);
 
     cs_disable();
 }
 
-void PCD_read_register_aligned(PCD_Register reg, uint32_t size, uint8_t *data, uint8_t rxAlign) {
+void PCD_read_register_aligned(PCD_Register reg, uint32_t size, uint8_t *data, uint8_t rx_align) {
     if (size == 0)
         return;
 
@@ -172,17 +172,17 @@ void PCD_clear_register_bit_mask(PCD_Register reg, uint8_t mask) {
     write_register(reg, tmp & (~mask));
 }
 
-StatusCode PCD_communicate_with_picc(PCD_Command command, uint8_t waitIRq, uint8_t *sendData, uint8_t sendLen,
-                                     uint8_t *backData, uint8_t *backLen, uint8_t *validBits,
-                                     uint8_t rxAlign, bool checkCRC) {
+StatusCode PCD_communicate_with_picc(PCD_Command command, uint8_t wait_irq, uint8_t *send_data, uint8_t send_len,
+                                     uint8_t *back_data, uint8_t *back_len, uint8_t *valid_bits,
+                                     uint8_t rx_align, bool check_CRC) {
     // Prepare values for BitFramingReg
-    uint8_t txLastBits = validBits ? *validBits : 0;
-    uint8_t bitFraming = (rxAlign << 4) + txLastBits; // RxAlign = BitFramingReg[6..4]. TxLastBits = BitFramingReg[2..0]
+    uint8_t txLastBits = valid_bits ? *valid_bits : 0;
+    uint8_t bitFraming = (rx_align << 4) + txLastBits; // rx_align = BitFramingReg[6..4]. TxLastBits = BitFramingReg[2..0]
 
     write_register(CommandReg, PCD_Idle);         // Stop any active command.
     write_register(ComIrqReg, 0x7F);              // Clear all seven interrupt request bits
     write_register(FIFOLevelReg, 0x80);           // FlushBuffer = 1, FIFO initialization
-    write_register_stream(FIFODataReg, sendLen, sendData); // Write sendData to the FIFO
+    write_register_stream(FIFODataReg, send_len, send_data); // Write send_data to the FIFO
     write_register(BitFramingReg, bitFraming);    // Bit adjustments
     write_register(CommandReg, (uint8_t)command);          // Execute the command
     if (command == PCD_Transceive) {
@@ -198,7 +198,7 @@ StatusCode PCD_communicate_with_picc(PCD_Command command, uint8_t waitIRq, uint8
 
     for (i = 2000; i > 0; i--) {
         read_data_byte(ComIrqReg, &irqVal);    // ComIrqReg[7..0]
-        if (irqVal & waitIRq) {
+        if (irqVal & wait_irq) {
             break;
         }
         if (irqVal & 0x01) {  // Timer interrupt - nothing received in 25ms
@@ -219,18 +219,18 @@ StatusCode PCD_communicate_with_picc(PCD_Command command, uint8_t waitIRq, uint8
     }
 
     // Handle back data if any
-    if (backData && backLen) {
+    if (back_data && back_len) {
         read_data_byte(FIFOLevelReg, &n);       // Number of bytes in the FIFO
-        if (n > *backLen) {
+        if (n > *back_len) {
             return STATUS_NO_ROOM;
         }
-        *backLen = n;                          // Store number of bytes returned
-        read_data_stream(FIFODataReg, backData, n);  // Get received data from FIFO
+        *back_len = n;                          // Store number of bytes returned
+        read_data_stream(FIFODataReg, back_data, n);  // Get received data from FIFO
     }
 
-    if (validBits) {
+    if (valid_bits) {
         read_data_byte(ControlReg, &n);
-        *validBits = n & 0x07;
+        *valid_bits = n & 0x07;
     }
 
     // Handle collision errors
@@ -242,31 +242,31 @@ StatusCode PCD_communicate_with_picc(PCD_Command command, uint8_t waitIRq, uint8
     return STATUS_OK;
 }
 
-StatusCode PCD_transceive_data(uint8_t *sendData, uint8_t sendLen, uint8_t *backData, uint8_t *backLen,
-                               uint8_t *validBits, uint8_t rxAlign, bool checkCRC) {
-    return PCD_communicate_with_picc(PCD_Transceive, 0x30, sendData, sendLen, backData, backLen, validBits, rxAlign, checkCRC);
+StatusCode PCD_transceive_data(uint8_t *send_data, uint8_t send_len, uint8_t *back_data, uint8_t *back_len,
+                               uint8_t *valid_bits, uint8_t rx_align, bool check_CRC) {
+    return PCD_communicate_with_picc(PCD_Transceive, 0x30, send_data, send_len, back_data, back_len, valid_bits, rx_align, check_CRC);
 }
 
 StatusCode PICC_REQA_or_WUPA(PICC_Command command, uint8_t *buffer_ATQA, uint8_t *buffer_size) {
-    uint8_t validBits;
-    uint8_t waitIRq;
-    uint8_t backData[18];   // ATQA can be 2 bytes long
-    uint8_t backLen;
+    uint8_t valid_bits;
+    uint8_t wait_irq;
+    uint8_t back_data[18];   // ATQA can be 2 bytes long
+    uint8_t back_len;
 
     // Only used in PICC_HaltA, otherwise unused
     if (command == PICC_CMD_HLTA) {
-        waitIRq = 0x10;
-        validBits = 0;
+        wait_irq = 0x10;
+        valid_bits = 0;
     } else {
-        waitIRq = 0x30;
-        validBits = 7;   // According to ISO/IEC 14443-3 7.2.1
+        wait_irq = 0x30;
+        valid_bits = 7;   // According to ISO/IEC 14443-3 7.2.1
     }
 
     // Send the command
-    StatusCode result = PCD_transceive_data(&command, 1, backData, &backLen, &validBits, 0, false);
+    StatusCode result = PCD_transceive_data(&command, 1, back_data, &back_len, &valid_bits, 0, false);
     if (result == STATUS_OK) {
         // ATQA must be exactly 2 bytes. Anything else must be interpreted as error.
-        if (backLen != 2 || validBits != 0) {
+        if (back_len != 2 || valid_bits != 0) {
             result = STATUS_ERROR;
         }
     }
@@ -277,8 +277,8 @@ StatusCode PICC_REQA_or_WUPA(PICC_Command command, uint8_t *buffer_ATQA, uint8_t
             return STATUS_NO_ROOM;
         }
         *buffer_size = 2;
-        buffer_ATQA[0] = backData[0];
-        buffer_ATQA[1] = backData[1];
+        buffer_ATQA[0] = back_data[0];
+        buffer_ATQA[1] = back_data[1];
     }
 
     return result;
