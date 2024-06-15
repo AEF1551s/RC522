@@ -5,7 +5,11 @@
 #include <exti.h>
 #include <mfrc522.h>
 #include <spi1.h>
+#include <stdlib.h>
 
+// Global variables
+Uid current_uid;
+//TODO: Add dynamic array functions for storing last 3 picc uids
 // TODO: Add SPI, GPIO, TIMER headers.
 
 int main()
@@ -15,7 +19,7 @@ int main()
     exti_init();
     spi1_init();
     mfrc522_init();
-
+    
     // delay
     for (volatile uint32_t i = 0; i < 100000; i++)
         ;
@@ -45,6 +49,9 @@ void EXTI15_10_IRQHandler(void)
         while (true)
         {
             if (!PICC_new_card_present())
+                return;
+
+            if (!PICC_read_card_serial(&current_uid))
                 return;
         }
     }
