@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <gpio.h>
 #include <exti.h>
-#include <mfrc522.h>
+#include <mfrc522_spi1.h>
 #include <spi1.h>
 #include <stdlib.h>
 
