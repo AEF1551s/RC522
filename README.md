@@ -104,6 +104,10 @@ To see register contents, access serial output and read memory use extensions su
 `MemoryView`  
 `Peripheral Viewer`  
 `Serial Monitor`  
+
+For this to work inside VSCode the *launch* **OpenOCD configuration** and *settings* **cortex-debug** paths must be set.  
+For additional debug features, setup VSCode as per **extension setup guides**.  
+
 ## Board setup  
 ![Ekrānuzņēmums 2024-06-17 115242](https://github.com/AEF1551s/RC522/assets/65708516/7d33c789-8afe-4090-a61a-c759283c7e76)  
 PA9 - NSS/CS  
@@ -111,8 +115,6 @@ PB3 - SCK
 PB4 - MISO  
 PB5 - MOSI  
 
-For this to work inside VSCode the *launch* **OpenOCD configuration** and *settings* **cortex-debug** paths must be set.  
-For additional debug features, setup VSCode as per **extension setup guides**.  
 ## Reason for porting existing library
 RFID card reading requires knowledge of not only SPI communication with PCD, but also extensive knowledge of MIFARE/NFC and ISO standarts that describe RFID card reading etc. 
 To understand this more broadly, existing library is rewritten, and then I look back at documentation (PICC selection/ identification flowcharts) to understand why certain steps are performed.  
